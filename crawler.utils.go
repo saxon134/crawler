@@ -8,11 +8,25 @@ import (
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/chromedp"
 	"github.com/saxon134/go-utils/saData"
+	"github.com/saxon134/go-utils/saData/saError"
 	"github.com/saxon134/go-utils/saData/saHit"
 	"github.com/saxon134/go-utils/saLog"
 	"strings"
 	"time"
 )
+
+// 拷贝context之外的内容
+func (dest *Ctx) Copy(org *Ctx) {
+	if org == nil {
+		return
+	}
+
+	dest.InitOk = org.InitOk
+	dest.Headers = saData.DicDeepCopy(org.Headers)
+	dest.Cookie = org.Cookie
+	dest.Token = org.Token
+	return
+}
 
 func Run(ctx context.Context, actions ...chromedp.Action) {
 	if ctx == nil {
@@ -22,19 +36,27 @@ func Run(ctx context.Context, actions ...chromedp.Action) {
 }
 
 func Click(ctx context.Context, selector string, contents ...string) {
+	var err = ClickWithErr(ctx, selector, contents...)
+	if err == nil {
+		return
+	}
+
+	//最后还是得点击一下，哪怕卡在这里
+	saLog.Err("[Crawler Click Blocked] " + selector)
+	Run(ctx, chromedp.Click(selector))
+}
+
+func ClickWithErr(ctx context.Context, selector string, contents ...string) error {
 	time.Sleep(time.Millisecond * 100)
 	var sel = findSelector(ctx, selector, contents)
 	if sel != "" {
 		var nodes = NodesWithTimeout(ctx, sel, 0)
 		if len(nodes) > 0 {
 			NodeClick(ctx, nodes[len(nodes)-1])
+			return nil
 		}
-		return
 	}
-
-	//最后还是得点击一下，哪怕卡在这里
-	saLog.Err("[Crawler Click Block] " + selector)
-	Run(ctx, chromedp.Click(selector))
+	return saError.New(saError.ErrNotExisted)
 }
 
 func Value(ctx context.Context, selector string, contents ...string) string {
