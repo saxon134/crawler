@@ -135,6 +135,10 @@ func VisibleWithTimeout(ctx context.Context, selector string, duration time.Dura
 	}
 }
 
+func Visible(ctx context.Context, selector string) (visible bool) {
+	return VisibleWithTimeout(ctx, selector, 0)
+}
+
 func NodeClick(ctx context.Context, node *cdp.Node) {
 	if node != nil {
 		Run(ctx, chromedp.MouseClickNode(node))

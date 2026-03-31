@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/kb"
+	"github.com/saxon134/go-utils/saData"
 	"github.com/saxon134/go-utils/saData/saError"
 	"strings"
 	"time"
@@ -71,7 +72,7 @@ func (m *Step) Run(ctx context.Context) error {
 					}
 				}
 
-				c, _ = context.WithTimeout(ctx, time.Second*4)
+				c, _ = context.WithTimeout(ctx, time.Second*time.Duration((saData.StrLen(m.Val)-1)/2+1))
 				err = chromedp.Run(c,
 					chromedp.Clear(selector),
 					chromedp.SendKeys(selector, m.Val),
