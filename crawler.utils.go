@@ -217,6 +217,10 @@ func NodesWithTimeout(ctx context.Context, sel string, duration time.Duration) (
 	}
 }
 
+func Nodes(ctx context.Context, sel string, duration time.Duration) (nodes []*cdp.Node) {
+	return NodesWithTimeout(ctx, sel, 0)
+}
+
 func GetCookie(ctx *Ctx) {
 	Run(
 		ctx,
