@@ -17,6 +17,17 @@ type Step struct {
 	Val string `json:"val"`
 }
 
+func RunSteps(ctx context.Context, steps []*Step) error {
+	var err error
+	for _, step := range steps {
+		err = step.Run(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (m *Step) Run(ctx context.Context) error {
 	var contents = strings.Split(m.Val, ",")
 	switch m.Act {
