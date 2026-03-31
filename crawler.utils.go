@@ -217,7 +217,7 @@ func NodesWithTimeout(ctx context.Context, sel string, duration time.Duration) (
 	}
 }
 
-func Nodes(ctx context.Context, sel string, duration time.Duration) (nodes []*cdp.Node) {
+func Nodes(ctx context.Context, sel string) (nodes []*cdp.Node) {
 	return NodesWithTimeout(ctx, sel, 0)
 }
 
