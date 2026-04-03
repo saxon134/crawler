@@ -49,6 +49,24 @@ func (m *Step) Run(ctx context.Context) error {
 		if m.Sel != "" {
 			Click(ctx, m.Sel, contents...)
 		}
+	case "input":
+		if m.Sel != "" {
+			var selector = findSelector(ctx, m.Sel, contents)
+			if selector != "" {
+				Run(ctx, chromedp.WaitReady(selector))
+				time.Sleep(time.Millisecond * 100)
+
+				var err = chromedp.Run(ctx,
+					chromedp.Focus(selector),
+					chromedp.SendKeys(selector, m.Val),
+					chromedp.Sleep(time.Second*time.Duration((saData.StrLen(m.Val)-1)/2+1)),
+					chromedp.Blur(selector),
+				)
+				if err == nil {
+					return nil
+				}
+			}
+		}
 	case "fill":
 		if m.Sel != "" {
 			var selector = findSelector(ctx, m.Sel, contents)
@@ -62,6 +80,7 @@ func (m *Step) Run(ctx context.Context) error {
 					chromedp.SetValue(selector, m.Val),
 					chromedp.Sleep(time.Millisecond*50),
 					chromedp.SendKeys(selector, " "),
+					chromedp.Sleep(time.Millisecond*50),
 					chromedp.SendKeys(selector, kb.Backspace),
 					chromedp.Sleep(time.Millisecond*50),
 					chromedp.Blur(selector),

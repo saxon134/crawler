@@ -249,7 +249,7 @@ func findSelector(ctx context.Context, selector string, contents []string) strin
 		panic("selector error")
 	}
 
-	if VisibleWithTimeout(ctx, selector, 0) {
+	if Visible(ctx, selector) {
 		return selector
 	}
 
